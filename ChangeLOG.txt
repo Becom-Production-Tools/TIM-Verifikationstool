@@ -1,5 +1,10 @@
 ﻿Änderungshistory
 
+V04
+2025-05-05 MRehberger
+- Profid Login hinzugefügt
+- SQL Abfragemethode agepasst
+
 V03
 2024-12-04	MRehberger
 - Ablaufänderung, wenn keine Messdaten gefunden wurden

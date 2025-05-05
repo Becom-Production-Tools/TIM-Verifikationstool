@@ -25,6 +25,7 @@ Public Class LoginForm1
         tbUser.Text = ""
         tbPassword.Text = ""
         tbPassword.PasswordChar = "*"
+        tbUser.SelectAll()
     End Sub
 
     Public Sub bTest_Click() Handles bTest.Click

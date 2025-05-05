@@ -29,88 +29,94 @@ Public Class Prozessdaten
         Prozessdaten_abfragen()
     End Sub
     Public Async Sub Prozessdaten_abfragen()
-        Dim Uri As New Uri("https://as400:11443/api/v1/sql/query")
-        ''Höhe
-        'Dim data = Encoding.UTF8.GetBytes("{""Query"":""select (PROWERT*1000000) as Wert, (PROLTL*1000000) as untereTol, (PROUTL*1000000) as obereTol, RTRIM(PROPOS) as Position, RTRIM(PROTYPE) as Type  from (SELECT ukop.*, upro.*, dense_rank() OVER(partition by kopisnr ORDER BY koptims desc) as dr from AS400.BEC001R426.UKOP UKOP, AS400.BEC001R426.UPRO UPRO WHERE UKOP.KOPID = UPRO.PROID AND (PROTYPE='10') AND UKOP.KOPISNR='" & ISNR & "' AND (UKOP.KOPANLNR='1097') ) where dr = 1""}")
-        'Dim result_post = SendRequest(Uri, data, "application/json", "POST")
-        'Dim json As JObject = JObject.Parse(result_post)
-        'Dim dataTable As DataTable = GetDataTableFromJsonString(result_post)
-        'dgv.DataSource = dataTable
-        ''Fläche abfragen
-        'Data = Encoding.UTF8.GetBytes("{""Query"":""select PROWERT as Wert, PROLTL as untereTol, PROUTL as obereTol, RTRIM(PROPOS) as Position, RTRIM(PROTYPE) as Type  from (SELECT ukop.*, upro.*, dense_rank() OVER(partition by kopisnr ORDER BY koptims desc) as dr from AS400.BEC001R426.UKOP UKOP, AS400.BEC001R426.UPRO UPRO WHERE UKOP.KOPID = UPRO.PROID AND (PROTYPE='25') AND UKOP.KOPISNR='" & ISNR & "' AND (UKOP.KOPANLNR='1097') ) where dr = 1""}")
-        'result_post = SendRequest(Uri, data, "application/json", "POST")
-        'dataTable = GetDataTableFromJsonString(result_post)
-        'dgv2.DataSource = dataTable
 
-        Dim jsonString As String
-        'Höhe
-        jsonString = "{""Query"":""select (PROWERT*1000000) as Wert, (PROLTL*1000000) as untereTol, (PROUTL*1000000) as obereTol, RTRIM(PROPOS) as Position, RTRIM(PROTYPE) as Type  from (SELECT ukop.*, upro.*, dense_rank() OVER(partition by kopisnr ORDER BY koptims desc) as dr from AS400.BEC001R426.UKOP UKOP, AS400.BEC001R426.UPRO UPRO WHERE UKOP.KOPID = UPRO.PROID AND (PROTYPE='10') AND UKOP.KOPISNR='" & ISNR & "' AND (UKOP.KOPANLNR='1097') ) where dr = 1""}"
-        ' API-Request senden
-        Dim result_post As String = Await SendRequestAsync(Uri.ToString(), jsonString, "application/json")
-        ' API-Antwort validieren
-        If String.IsNullOrWhiteSpace(result_post) Then
-            MessageBox.Show("Leere Antwort von API erhalten!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Return
-        End If
-        '' Daten in DataTable umwandeln
-        'Dim dataTable As DataTable = GetDataTableFromJsonString(result_post)
-        Dim dataTable As DataTable = ConvertXmlToDataTable(result_post)
-        dgv.DataSource = dataTable
+        Try
+            Dim Uri As New Uri("https://as400:11443/api/v1/sql/query")
+            ''Höhe
+            'Dim data = Encoding.UTF8.GetBytes("{""Query"":""select (PROWERT*1000000) as Wert, (PROLTL*1000000) as untereTol, (PROUTL*1000000) as obereTol, RTRIM(PROPOS) as Position, RTRIM(PROTYPE) as Type  from (SELECT ukop.*, upro.*, dense_rank() OVER(partition by kopisnr ORDER BY koptims desc) as dr from AS400.BEC001R426.UKOP UKOP, AS400.BEC001R426.UPRO UPRO WHERE UKOP.KOPID = UPRO.PROID AND (PROTYPE='10') AND UKOP.KOPISNR='" & ISNR & "' AND (UKOP.KOPANLNR='1097') ) where dr = 1""}")
+            'Dim result_post = SendRequest(Uri, data, "application/json", "POST")
+            'Dim json As JObject = JObject.Parse(result_post)
+            'Dim dataTable As DataTable = GetDataTableFromJsonString(result_post)
+            'dgv.DataSource = dataTable
+            ''Fläche abfragen
+            'Data = Encoding.UTF8.GetBytes("{""Query"":""select PROWERT as Wert, PROLTL as untereTol, PROUTL as obereTol, RTRIM(PROPOS) as Position, RTRIM(PROTYPE) as Type  from (SELECT ukop.*, upro.*, dense_rank() OVER(partition by kopisnr ORDER BY koptims desc) as dr from AS400.BEC001R426.UKOP UKOP, AS400.BEC001R426.UPRO UPRO WHERE UKOP.KOPID = UPRO.PROID AND (PROTYPE='25') AND UKOP.KOPISNR='" & ISNR & "' AND (UKOP.KOPANLNR='1097') ) where dr = 1""}")
+            'result_post = SendRequest(Uri, data, "application/json", "POST")
+            'dataTable = GetDataTableFromJsonString(result_post)
+            'dgv2.DataSource = dataTable
 
-        'Fläche
-        jsonString = "{""Query"":""select PROWERT as Wert, PROLTL as untereTol, PROUTL as obereTol, RTRIM(PROPOS) as Position, RTRIM(PROTYPE) as Type  from (SELECT ukop.*, upro.*, dense_rank() OVER(partition by kopisnr ORDER BY koptims desc) as dr from AS400.BEC001R426.UKOP UKOP, AS400.BEC001R426.UPRO UPRO WHERE UKOP.KOPID = UPRO.PROID AND (PROTYPE='25') AND UKOP.KOPISNR='" & ISNR & "' AND (UKOP.KOPANLNR='1097') ) where dr = 1""}"
-        ' API-Request senden
-        result_post = Await SendRequestAsync(Uri.ToString(), jsonString, "application/json")
-        ' API-Antwort validieren
-        If String.IsNullOrWhiteSpace(result_post) Then
-            MessageBox.Show("Leere Antwort von API erhalten!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Return
-        End If
-        '' Daten in DataTable umwandeln
-        'Dim dataTable As DataTable = GetDataTableFromJsonString(result_post)
-        dataTable = ConvertXmlToDataTable(result_post)
-        dgv2.DataSource = dataTable
-
-
-        dgv.Columns.Add("Auswertung", "Auswertung")
-        dgv2.Columns.Add("Auswertung", "Auswertung")
-
-        Dim cnt As Integer
-        'Höhenwerte
-        cnt = dgv.RowCount
-        If cnt = 0 Then
-            Label3.Visible = True
-        Else
-            Label3.Visible = False
-        End If
-        For i = 0 To cnt - 1
-            If dgv.Rows(i).Cells(0).Value.ToString.Contains(".") Then
-                dgv.Rows(i).Cells(0).Value = Mid(dgv.Rows(i).Cells(0).Value, 1, InStr(1, dgv.Rows(i).Cells(0).Value, ".") - 1)
+            Dim jsonString As String
+            'Höhe
+            jsonString = "{""Query"":""select (PROWERT*1000000) as Wert, (PROLTL*1000000) as untereTol, (PROUTL*1000000) as obereTol, RTRIM(PROPOS) as Position, RTRIM(PROTYPE) as Type  from (SELECT ukop.*, upro.*, dense_rank() OVER(partition by kopisnr ORDER BY koptims desc) as dr from AS400.BEC001R426.UKOP UKOP, AS400.BEC001R426.UPRO UPRO WHERE UKOP.KOPID = UPRO.PROID AND (PROTYPE='10') AND UKOP.KOPISNR='" & ISNR & "' AND (UKOP.KOPANLNR='1097') ) where dr = 1""}"
+            ' API-Request senden
+            Dim result_post As String = Await SendRequestAsync(Uri.ToString(), jsonString, "application/json")
+            ' API-Antwort validieren
+            If String.IsNullOrWhiteSpace(result_post) Then
+                MessageBox.Show("Leere Antwort von API erhalten!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
             End If
-            If CInt(dgv.Rows(i).Cells(0).Value) < CInt(dgv.Rows(i).Cells(1).Value) Or CInt(dgv.Rows(i).Cells(0).Value) > CInt(dgv.Rows(i).Cells(2).Value) Then
-                dgv.Rows(i).Cells(5).Value = "NOK"
-                dgv.Rows(i).DefaultCellStyle.BackColor = Color.Red
+            '' Daten in DataTable umwandeln
+            'Dim dataTable As DataTable = GetDataTableFromJsonString(result_post)
+            Dim dataTable As DataTable = ConvertXmlToDataTable(result_post)
+            dgv.DataSource = dataTable
+
+            'Fläche
+            jsonString = "{""Query"":""select PROWERT as Wert, PROLTL as untereTol, PROUTL as obereTol, RTRIM(PROPOS) as Position, RTRIM(PROTYPE) as Type  from (SELECT ukop.*, upro.*, dense_rank() OVER(partition by kopisnr ORDER BY koptims desc) as dr from AS400.BEC001R426.UKOP UKOP, AS400.BEC001R426.UPRO UPRO WHERE UKOP.KOPID = UPRO.PROID AND (PROTYPE='25') AND UKOP.KOPISNR='" & ISNR & "' AND (UKOP.KOPANLNR='1097') ) where dr = 1""}"
+            ' API-Request senden
+            result_post = Await SendRequestAsync(Uri.ToString(), jsonString, "application/json")
+            ' API-Antwort validieren
+            If String.IsNullOrWhiteSpace(result_post) Then
+                MessageBox.Show("Leere Antwort von API erhalten!", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End If
+            '' Daten in DataTable umwandeln
+            'Dim dataTable As DataTable = GetDataTableFromJsonString(result_post)
+            dataTable = ConvertXmlToDataTable(result_post)
+            dgv2.DataSource = dataTable
+
+
+            dgv.Columns.Add("Auswertung", "Auswertung")
+            dgv2.Columns.Add("Auswertung", "Auswertung")
+
+            Dim cnt As Integer
+            'Höhenwerte
+            cnt = dgv.RowCount
+            If cnt = 0 Then
+                Label3.Visible = True
             Else
-                dgv.Rows(i).Cells(5).Value = "OK"
-                dgv.Rows(i).DefaultCellStyle.BackColor = Color.LightGreen
+                Label3.Visible = False
             End If
-        Next
-        'Flächenwerte
-        cnt = dgv2.RowCount
-        If cnt = 0 Then
-            Label4.Visible = True
-        Else
-            Label4.Visible = False
-        End If
-        For i = 0 To cnt - 1
-            If CInt(dgv2.Rows(i).Cells(0).Value) < CInt(dgv2.Rows(i).Cells(1).Value) Then
-                dgv2.Rows(i).Cells(5).Value = "NOK"
-                dgv2.Rows(i).DefaultCellStyle.BackColor = Color.Red
+            For i = 0 To cnt - 1
+                If dgv.Rows(i).Cells(0).Value.ToString.Contains(".") Then
+                    dgv.Rows(i).Cells(0).Value = Mid(dgv.Rows(i).Cells(0).Value, 1, InStr(1, dgv.Rows(i).Cells(0).Value, ".") - 1)
+                End If
+                If CInt(dgv.Rows(i).Cells(0).Value) < CInt(dgv.Rows(i).Cells(1).Value) Or CInt(dgv.Rows(i).Cells(0).Value) > CInt(dgv.Rows(i).Cells(2).Value) Then
+                    dgv.Rows(i).Cells(5).Value = "NOK"
+                    dgv.Rows(i).DefaultCellStyle.BackColor = Color.Red
+                Else
+                    dgv.Rows(i).Cells(5).Value = "OK"
+                    dgv.Rows(i).DefaultCellStyle.BackColor = Color.LightGreen
+                End If
+            Next
+            'Flächenwerte
+            cnt = dgv2.RowCount
+            If cnt = 0 Then
+                Label4.Visible = True
             Else
-                dgv2.Rows(i).Cells(5).Value = "OK"
-                dgv2.Rows(i).DefaultCellStyle.BackColor = Color.LightGreen
+                Label4.Visible = False
             End If
-        Next
+            For i = 0 To cnt - 1
+                If CInt(dgv2.Rows(i).Cells(0).Value) < CInt(dgv2.Rows(i).Cells(1).Value) Then
+                    dgv2.Rows(i).Cells(5).Value = "NOK"
+                    dgv2.Rows(i).DefaultCellStyle.BackColor = Color.Red
+                Else
+                    dgv2.Rows(i).Cells(5).Value = "OK"
+                    dgv2.Rows(i).DefaultCellStyle.BackColor = Color.LightGreen
+                End If
+            Next
+        Catch ex As Exception
+            MessageBox.Show("Fehler beim Abrufen der Prozessdaten: " & ex.Message, "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MsgBox("Profid Benutzerdaten überprüfen und neu eingeben")
+        End Try
     End Sub
     Public Function GetDataTableFromJsonString(json As String) As DataTable
         Dim jsonLinq = JObject.Parse(json)
@@ -143,7 +149,6 @@ Public Class Prozessdaten
             Return New DataTable() ' Leere Tabelle zurückgeben
         End If
     End Function
-
     Public Async Function SendRequestAsync(uri As String, jsonData As String, contentType As String) As Task(Of String)
         Using client As New HttpClient()
             Dim request As New HttpRequestMessage(HttpMethod.Post, uri)

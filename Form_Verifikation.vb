@@ -17,7 +17,7 @@ Public Class Form_Verifikation
     Public ProfidUser, ProfidPassword As String
 
     '########################################################
-    Dim ProgVersion As String = "V03"
+    Dim ProgVersion As String = "V04"
     '########################################################
     Private Sub Form_Datenreparatur_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         DataGridView1.Width = Me.Width - 80
