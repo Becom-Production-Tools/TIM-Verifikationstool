@@ -1,0 +1,13 @@
+﻿Änderungshistory
+
+V03
+2024-12-04	MRehberger
+- Ablaufänderung, wenn keine Messdaten gefunden wurden
+
+V02
+2024-04-26	MRehberger
+- Änderung Zugansdaten
+
+V01
+2023-02-24	MRehberger
+- Programm erstellt und ausgegeben
